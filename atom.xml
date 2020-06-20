@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>老榕树下</title>
+  <title>江湖夜雨</title>
   
-  
+  <subtitle>互联网技术杂谈</subtitle>
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.chenyy.me/"/>
-  <updated>2020-06-20T05:25:14.123Z</updated>
+  <updated>2020-06-20T07:37:37.798Z</updated>
   <id>https://www.chenyy.me/</id>
   
   <author>
@@ -17,16 +17,39 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hello-World</title>
-    <link href="https://www.chenyy.me/2020/06/Hello-World/"/>
-    <id>https://www.chenyy.me/2020/06/Hello-World/</id>
-    <published>2020-06-20T05:25:14.000Z</published>
-    <updated>2020-06-20T05:25:14.123Z</updated>
+    <title>微信群成员可以自动批量导出来吗？</title>
+    <link href="https://www.chenyy.me/2020/06/export-wechat-members/"/>
+    <id>https://www.chenyy.me/2020/06/export-wechat-members/</id>
+    <published>2020-06-19T16:00:00.000Z</published>
+    <updated>2020-06-20T07:37:37.798Z</updated>
     
     <summary type="html">
     
+      
+      
+        
+        
+          &lt;p&gt;朋友问我，有什么办法可以将微信群里所有成员的昵称、微信号、所在地自动导出来呢？&lt;/p&gt;
+&lt;p&gt;找了一圈发现，微信本身没有提供这个功能，也不提供相应的开发接口。不过，既然我们可以一个个翻看微信群中的每个成员，那么这个过程可否用程序替代呢？再进一步，程序可否将微信个人信息页面的
+        
+      
+    
     </summary>
     
+    
+      <category term="Python" scheme="https://www.chenyy.me/tags/Python/"/>
+    
+      <category term="微信" scheme="https://www.chenyy.me/tags/%E5%BE%AE%E4%BF%A1/"/>
+    
+      <category term="Airtest" scheme="https://www.chenyy.me/tags/Airtest/"/>
+    
+      <category term="OCR" scheme="https://www.chenyy.me/tags/OCR/"/>
+    
+      <category term="Tesseract" scheme="https://www.chenyy.me/tags/Tesseract/"/>
+    
+      <category term="Appium" scheme="https://www.chenyy.me/tags/Appium/"/>
+    
+      <category term="Selenium" scheme="https://www.chenyy.me/tags/Selenium/"/>
     
   </entry>
   

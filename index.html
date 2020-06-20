@@ -4,18 +4,18 @@
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   
-  <title>老榕树下</title>
+  <title>江湖夜雨</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="keywords" content="技术, 架构, 互联网, 企业应用, 工业互联网, 大数据, Python, C++, Java, 机器学习, 人工智能, 自然语言处理, 知识图谱, 爬虫">
 <meta property="og:type" content="website">
-<meta property="og:title" content="老榕树下">
+<meta property="og:title" content="江湖夜雨">
 <meta property="og:url" content="https://www.chenyy.me/index.html">
-<meta property="og:site_name" content="老榕树下">
+<meta property="og:site_name" content="江湖夜雨">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="老榕树下">
+<meta name="twitter:title" content="江湖夜雨">
   
-    <link rel="alternative" href="/atom.xml" title="老榕树下" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="江湖夜雨" type="application/atom+xml">
   
   
     <link rel="icon" href="/img/favicon.ico">
@@ -51,8 +51,12 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">老榕树下</a>
+        <a href="/" id="logo">江湖夜雨</a>
       </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">互联网技术杂谈</a>
+        </h2>
       
     </div>
     <div id="header-inner" class="inner">
@@ -94,14 +98,14 @@
       <section id="main">
   
     <article
-  id="post-Hello-World"
+  id="post-export-wechat-members"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
 >
   <div class="article-meta">
-    <a href="/2020/06/Hello-World/" class="article-date">
-  <time datetime="2020-06-20T05:25:14.000Z" itemprop="datePublished">2020-06-20</time>
+    <a href="/2020/06/export-wechat-members/" class="article-date">
+  <time datetime="2020-06-19T16:00:00.000Z" itemprop="datePublished">2020-06-20</time>
 </a>
 
     
@@ -114,7 +118,7 @@
       
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/06/Hello-World/">Hello-World</a>
+      <a class="article-title" href="/2020/06/export-wechat-members/">微信群成员可以自动批量导出来吗？</a>
     </h1>
   
 
@@ -126,19 +130,25 @@
         <!-- Table of Contents for post -->
       
         
-       
+      <p>朋友问我，有什么办法可以将微信群里所有成员的昵称、微信号、所在地自动导出来呢？</p>
+<p>找了一圈发现，微信本身没有提供这个功能，也不提供相应的开发接口。不过，既然我们可以一个个翻看微信群中的每个成员，那么这个过程可否用程序替代呢？再进一步，程序可否将微信个人信息页面的文字图像给识别出来呢？</p>
+<p>答案是肯定的。我们可以利用<code>UI自动化测试</code>的相应工具，模拟用户逐一查看群成员的个人页面，截屏，再用<code>OCR</code>将其内容识别出来。</p>
+<p>UI自动化测试的工具很多，适合于手机应用的有<a href="http://appium.io" target="_blank" rel="noopener">Appium</a>和网易的<a href="http://airtest.netease.com" target="_blank" rel="noopener">Airtest</a>，其实这俩都是跨平台的，可以测试<code>安卓</code>也可以测试<code>iOS</code>上的应用，甚至也可以担纲桌面应用的UI自动化测试。<a href="http://airtest.netease.com" target="_blank" rel="noopener">Airtest</a>提供了开发工具、集成了<a href="https://poco.readthedocs.io/zh_CN/latest" target="_blank" rel="noopener">pocoui</a>和adb等，开箱即用。另外还有一点，可以用<code>Python</code>写测试脚本，这极大增强了测试工具的能力，而且借助强大的<code>Python</code>生态圈，比如<a href="https://pypi.org/project/pytesseract" target="_blank" rel="noopener">Pytesseract</a>可以帮助识别出界面文本，那我们很容易就可以将前述的几个工作步骤串联起来，形成一个完整工具了。</p>
+ 
     </div>
     <!-- Table of Contents for page -->
     <!--   -->
     <footer class="article-footer">
       
       <a
-        data-url="https://www.chenyy.me/2020/06/Hello-World/"
-        data-id="ckbn77itx00037lj7hzhxmxao"
+        data-url="https://www.chenyy.me/2020/06/export-wechat-members/"
+        data-id="ckbnbz97c00035mj7we80d6j6"
         class="article-share-link"
         >分享到</a
       >
         
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Airtest/">Airtest</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Appium/">Appium</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OCR/">OCR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Selenium/">Selenium</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tesseract/">Tesseract</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/微信/">微信</a></li></ul>
+
 
     </footer>
   </div>
@@ -159,6 +169,13 @@
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Airtest/" style="font-size: 10px;">Airtest</a> <a href="/tags/Appium/" style="font-size: 10px;">Appium</a> <a href="/tags/OCR/" style="font-size: 10px;">OCR</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/Selenium/" style="font-size: 10px;">Selenium</a> <a href="/tags/Tesseract/" style="font-size: 10px;">Tesseract</a> <a href="/tags/微信/" style="font-size: 10px;">微信</a>
+    </div>
+  </div>
+
 
   
     
@@ -178,7 +195,7 @@
       <ul>
         
           <li>
-            <a href="/2020/06/Hello-World/">Hello-World</a>
+            <a href="/2020/06/export-wechat-members/">微信群成员可以自动批量导出来吗？</a>
           </li>
         
       </ul>
