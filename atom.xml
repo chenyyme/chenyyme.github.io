@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.chenyy.me/"/>
-  <updated>2020-06-20T07:37:37.798Z</updated>
+  <updated>2020-06-22T07:25:01.403Z</updated>
   <id>https://www.chenyy.me/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何使用脚本备份 MySQL 数据库？</title>
+    <link href="https://www.chenyy.me/2020/06/mysql-backup-script/"/>
+    <id>https://www.chenyy.me/2020/06/mysql-backup-script/</id>
+    <published>2020-06-22T05:04:15.000Z</published>
+    <updated>2020-06-22T07:25:01.403Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;使用 &lt;code&gt;Shell&lt;/code&gt; 脚本对 &lt;code&gt;MySQL&lt;/code&gt;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="MySQL" scheme="https://www.chenyy.me/tags/MySQL/"/>
+    
+      <category term="备份" scheme="https://www.chenyy.me/tags/%E5%A4%87%E4%BB%BD/"/>
+    
+      <category term="Shell" scheme="https://www.chenyy.me/tags/Shell/"/>
+    
+      <category term="Bash" scheme="https://www.chenyy.me/tags/Bash/"/>
+    
+  </entry>
   
   <entry>
     <title>微信群成员可以自动批量导出来吗？</title>

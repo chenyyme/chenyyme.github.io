@@ -4,16 +4,20 @@
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   
-  <title>江湖夜雨</title>
+  <title>如何使用脚本备份 MySQL 数据库？ | 江湖夜雨</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="技术, 架构, 互联网, 企业应用, 工业互联网, 大数据, Python, C++, Java, 机器学习, 人工智能, 自然语言处理, 知识图谱, 爬虫">
-<meta property="og:type" content="website">
-<meta property="og:title" content="江湖夜雨">
-<meta property="og:url" content="https://www.chenyy.me/index.html">
+  <meta name="description" content="使用 Shell 脚本对 MySQL 数据库进行备份，可以满足并发量不大的小型数据库。如果是更大数据量且并发量大的生产数据库，建议采用双(多)机热备或专业备份工具，在服务可用性的前提下，更好地保证数据的完全性和安全性。 备份用户为数据库中单独创建一个备份用户，只赋予所需尽可能少的权限。与应用帐号隔离开。不要为了偷懒而直接使用 root 用户！ 12345678-- 创建单独的备份用户create">
+<meta name="keywords" content="MySQL,备份,Shell,Bash">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用脚本备份 MySQL 数据库？">
+<meta property="og:url" content="https://www.chenyy.me/2020/06/mysql-backup-script/index.html">
 <meta property="og:site_name" content="江湖夜雨">
+<meta property="og:description" content="使用 Shell 脚本对 MySQL 数据库进行备份，可以满足并发量不大的小型数据库。如果是更大数据量且并发量大的生产数据库，建议采用双(多)机热备或专业备份工具，在服务可用性的前提下，更好地保证数据的完全性和安全性。 备份用户为数据库中单独创建一个备份用户，只赋予所需尽可能少的权限。与应用帐号隔离开。不要为了偷懒而直接使用 root 用户！ 12345678-- 创建单独的备份用户create">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-22T07:25:01.403Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="江湖夜雨">
+<meta name="twitter:title" content="如何使用脚本备份 MySQL 数据库？">
+<meta name="twitter:description" content="使用 Shell 脚本对 MySQL 数据库进行备份，可以满足并发量不大的小型数据库。如果是更大数据量且并发量大的生产数据库，建议采用双(多)机热备或专业备份工具，在服务可用性的前提下，更好地保证数据的完全性和安全性。 备份用户为数据库中单独创建一个备份用户，只赋予所需尽可能少的权限。与应用帐号隔离开。不要为了偷懒而直接使用 root 用户！ 12345678-- 创建单独的备份用户create">
   
     <link rel="alternative" href="/atom.xml" title="江湖夜雨" type="application/atom+xml">
   
@@ -95,9 +99,7 @@
 </header> 
 
     <div class="outer">
-      <section id="main">
-  
-    <article
+      <section id="main"><article
   id="post-mysql-backup-script"
   class="article article-type-post"
   itemscope
@@ -117,8 +119,8 @@
     <header class="article-header">
       
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/06/mysql-backup-script/">如何使用脚本备份 MySQL 数据库？</a>
+    <h1 class="article-title" itemprop="name">
+      如何使用脚本备份 MySQL 数据库？
     </h1>
   
 
@@ -158,75 +160,21 @@
 
     </footer>
   </div>
+   
+<nav id="article-nav">
   
+  
+    <a href="/2020/06/export-wechat-members/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">微信群成员可以自动批量导出来吗？</div>
+    </a>
+  
+</nav>
+
+ 
 </article>
 
 
-
-  
-    <article
-  id="post-export-wechat-members"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
->
-  <div class="article-meta">
-    <a href="/2020/06/export-wechat-members/" class="article-date">
-  <time datetime="2020-06-19T16:00:00.000Z" itemprop="datePublished">2020-06-20</time>
-</a>
-
-    
-
-  </div>
-  <div class="article-inner">
-    
- 
-    <header class="article-header">
-      
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/06/export-wechat-members/">微信群成员可以自动批量导出来吗？</a>
-    </h1>
-  
-
-
-    </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <!-- Table of Contents for post -->
-      
-        
-      <p>朋友问我，有什么办法可以将微信群里所有成员的昵称、微信号、所在地自动导出来呢？</p>
-<p>找了一圈发现，微信本身没有提供这个功能，也不提供相应的开发接口。不过，既然我们可以一个个翻看微信群中的每个成员，那么这个过程可否用程序替代呢？再进一步，程序可否将微信个人信息页面的文字图像给识别出来呢？</p>
-<p>答案是肯定的。我们可以利用<code>UI自动化测试</code>的相应工具，模拟用户逐一查看群成员的个人页面，截屏，再用<code>OCR</code>将其内容识别出来。</p>
-<p>UI自动化测试的工具很多，适合于手机应用的有<a href="http://appium.io" target="_blank" rel="noopener">Appium</a>和网易的<a href="http://airtest.netease.com" target="_blank" rel="noopener">Airtest</a>，其实这俩都是跨平台的，可以测试<code>安卓</code>也可以测试<code>iOS</code>上的应用，甚至也可以担纲桌面应用的UI自动化测试。<a href="http://airtest.netease.com" target="_blank" rel="noopener">Airtest</a>提供了开发工具、集成了<a href="https://poco.readthedocs.io/zh_CN/latest" target="_blank" rel="noopener">pocoui</a>和adb等，开箱即用。另外还有一点，可以用<code>Python</code>写测试脚本，这极大增强了测试工具的能力，而且借助强大的<code>Python</code>生态圈，比如<a href="https://pypi.org/project/pytesseract" target="_blank" rel="noopener">Pytesseract</a>可以帮助识别出界面文本，那我们很容易就可以将前述的几个工作步骤串联起来，形成一个完整工具了。</p>
- 
-    </div>
-    <!-- Table of Contents for page -->
-    <!--   -->
-    <footer class="article-footer">
-      
-      <a
-        data-url="https://www.chenyy.me/2020/06/export-wechat-members/"
-        data-id="ckbq6e5qx0003rqj7jnkxebds"
-        class="article-share-link"
-        >分享到</a
-      >
-        
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Airtest/">Airtest</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Appium/">Appium</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OCR/">OCR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Selenium/">Selenium</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tesseract/">Tesseract</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/微信/">微信</a></li></ul>
-
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-
- 
 
 </section>
       

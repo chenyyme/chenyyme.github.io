@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.chenyy.me/2020/06/mysql-backup-script/</loc>
+    <lastmod>2020-06-22</lastmod>
+  </url>  <url>
     <loc>https://www.chenyy.me/2020/06/export-wechat-members/</loc>
     <lastmod>2020-06-20</lastmod>
   </url>
