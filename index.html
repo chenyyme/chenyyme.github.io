@@ -139,12 +139,13 @@
 <p>如果数据库使用的是<code>MySQL 8.0</code>之前的版本，那就需要自定义函数来模拟它。其他数据库系统都有此窗口函数。</p>
 </blockquote>
 <p>首先创建数据库视图：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">or</span> <span class="keyword">replace</span> <span class="keyword">view</span> revenue_monthly_view <span class="keyword">as</span></span><br><span class="line"><span class="keyword">select</span> row_number() <span class="keyword">over</span> () <span class="keyword">as</span> <span class="keyword">id</span>,</span><br><span class="line">       vt.*</span><br><span class="line"><span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">sum</span>(<span class="string">`t1`</span>.<span class="string">`sold_price`</span> - <span class="string">`t1`</span>.<span class="string">`discount`</span>) <span class="keyword">as</span> <span class="string">`quantity`</span>,</span><br><span class="line">             <span class="keyword">date_format</span>(<span class="string">`t1`</span>.<span class="string">`settled_at`</span>, <span class="string">'%Y-%m'</span>)  <span class="keyword">as</span> <span class="string">`month`</span></span><br><span class="line">      <span class="keyword">from</span> <span class="string">`product_items`</span> <span class="string">`t1`</span></span><br><span class="line">      <span class="keyword">where</span> <span class="string">`t1`</span>.<span class="string">`status`</span> = <span class="string">'sold'</span></span><br><span class="line">      <span class="keyword">group</span> <span class="keyword">by</span> <span class="string">`month`</span></span><br><span class="line">      ) vt</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> <span class="string">`month`</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">or</span> <span class="keyword">replace</span> <span class="keyword">view</span> revenue_monthly_view <span class="keyword">as</span></span><br><span class="line"><span class="keyword">select</span> row_number() <span class="keyword">over</span> () <span class="keyword">as</span> <span class="keyword">id</span>,</span><br><span class="line">       vt.*</span><br><span class="line"><span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">sum</span>(<span class="string">`t1`</span>.<span class="string">`sold_price`</span> - <span class="string">`t1`</span>.<span class="string">`discount`</span>) <span class="keyword">as</span> <span class="string">`quantity`</span>,</span><br><span class="line">             <span class="keyword">date_format</span>(<span class="string">`t1`</span>.<span class="string">`settled_at`</span>, <span class="string">'%Y-%m'</span>)  <span class="keyword">as</span> <span class="string">`month`</span></span><br><span class="line">      <span class="keyword">from</span> <span class="string">`product_items`</span> <span class="string">`t1`</span></span><br><span class="line">      <span class="keyword">where</span> <span class="string">`t1`</span>.<span class="string">`status`</span> = <span class="string">'sold'</span></span><br><span class="line">      <span class="keyword">group</span> <span class="keyword">by</span> <span class="string">`month`</span></span><br><span class="line">      ) vt</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> <span class="string">`month`</span> <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
 
 <p>接着定义好映射到数据库视图的模型：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RevenueMonthly</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    id = models.BigAutoField(<span class="string">'ID'</span>, primary_key=<span class="keyword">True</span>, max_length=<span class="number">16</span>)</span><br><span class="line">    month = models.CharField(<span class="string">'月份'</span>, max_length=<span class="number">16</span>)</span><br><span class="line">    quantity = models.DecimalField(<span class="string">'数额'</span>, max_digits=<span class="number">16</span>, decimal_places=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        managed = <span class="keyword">False</span></span><br><span class="line">        db_table = <span class="string">'revenue_monthly_view'</span></span><br></pre></td></tr></table></figure>
 
- 
+<p>最后，就可以跟通常QuerySet的使用一样了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取最近12个月的收入统计</span></span><br><span class="line">last_12_month_revenue = RevenueMonthly.objects.filter(month__gt=one_year_before)</span><br></pre></td></tr></table></figure> 
     </div>
     <!-- Table of Contents for page -->
     <!--   -->
@@ -152,7 +153,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/07/django-database-view/"
-        data-id="ckc7dd0zy0004sej7ygg9i41u"
+        data-id="ckc7e826x0006doj7ykltl6xq"
         class="article-share-link"
         >分享到</a
       >
@@ -219,7 +220,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/06/mysql-backup-script/"
-        data-id="ckc7dd0zv0003sej7ru4dvlva"
+        data-id="ckc7e826u0004doj7nmm96rke"
         class="article-share-link"
         >分享到</a
       >
@@ -280,7 +281,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/06/export-wechat-members/"
-        data-id="ckc7dd107000lsej7281dv8b9"
+        data-id="ckc7e826r0003doj7azbvvlzj"
         class="article-share-link"
         >分享到</a
       >
