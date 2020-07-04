@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.chenyy.me/2020/07/django-database-view/</loc>
+    
+    <lastmod>2020-07-04T08:12:14.362Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.chenyy.me/2020/06/mysql-backup-script/</loc>
     
     <lastmod>2020-06-22T07:25:01.403Z</lastmod>
