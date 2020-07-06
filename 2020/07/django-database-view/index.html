@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html>
 <head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
   <title>Django读取MySQL视图数据 | 江湖夜雨</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Django中的业务模型有个限制：必须有ID字段。一般情况下这没有问题，但是一旦我们需要访问数据库视图数据时，这个限制就会带来麻烦。 数据库视图一般仅为全量业务数据的局部，而且通常涉及统计结果，或者多表联查结果。在这样的场景里，业务对象ID包含到视图中就缺乏实际意义了。 但是，整个应用都在Django框架下开发，且它已经提供了相当好用的ORM模块，这时候再引入其他数据库访问框架，一来应用显得更加笨">
-<meta name="keywords" content="Django,MySQL,数据库视图,数据报表">
+<meta name="keywords" content="MySQL,Django,数据库视图,数据报表">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Django读取MySQL视图数据">
 <meta property="og:url" content="https://www.chenyy.me/2020/07/django-database-view/index.html">
@@ -41,14 +41,14 @@
     var s = document.getElementsByTagName("script")[0];
     s.parentNode.insertBefore(hm, s);
   })();
-</script>
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
  
     
 </head>
 </html>
 <body>
-<div id="container">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
   <div id="wrap">
     <header id="header">
   <div id="banner"></div>
@@ -140,14 +140,10 @@
 <blockquote>
 <p>如果数据库使用的是<code>MySQL 8.0</code>之前的版本，那就需要自定义函数来模拟它。其他数据库系统都有此窗口函数。</p>
 </blockquote>
-<p>首先创建数据库视图：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">or</span> <span class="keyword">replace</span> <span class="keyword">view</span> revenue_monthly_view <span class="keyword">as</span></span><br><span class="line"><span class="keyword">select</span> row_number() <span class="keyword">over</span> () <span class="keyword">as</span> <span class="keyword">id</span>,</span><br><span class="line">       vt.*</span><br><span class="line"><span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">sum</span>(<span class="string">`t1`</span>.<span class="string">`sold_price`</span> - <span class="string">`t1`</span>.<span class="string">`discount`</span>) <span class="keyword">as</span> <span class="string">`quantity`</span>,</span><br><span class="line">             <span class="keyword">date_format</span>(<span class="string">`t1`</span>.<span class="string">`settled_at`</span>, <span class="string">'%Y-%m'</span>)  <span class="keyword">as</span> <span class="string">`month`</span></span><br><span class="line">      <span class="keyword">from</span> <span class="string">`product_items`</span> <span class="string">`t1`</span></span><br><span class="line">      <span class="keyword">where</span> <span class="string">`t1`</span>.<span class="string">`status`</span> = <span class="string">'sold'</span></span><br><span class="line">      <span class="keyword">group</span> <span class="keyword">by</span> <span class="string">`month`</span></span><br><span class="line">      ) vt</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> <span class="string">`month`</span> <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
-
-<p>接着定义好映射到数据库视图的模型：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RevenueMonthly</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    id = models.BigAutoField(<span class="string">'ID'</span>, primary_key=<span class="keyword">True</span>, max_length=<span class="number">16</span>)</span><br><span class="line">    month = models.CharField(<span class="string">'月份'</span>, max_length=<span class="number">16</span>)</span><br><span class="line">    quantity = models.DecimalField(<span class="string">'数额'</span>, max_digits=<span class="number">16</span>, decimal_places=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        managed = <span class="keyword">False</span></span><br><span class="line">        db_table = <span class="string">'revenue_monthly_view'</span></span><br></pre></td></tr></table></figure>
-
-<p>最后，就可以跟通常QuerySet的使用一样了。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取最近12个月的收入统计</span></span><br><span class="line">last_12_month_revenue = RevenueMonthly.objects.filter(month__gt=one_year_before)</span><br></pre></td></tr></table></figure> 
+<p>首先创建数据库视图：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">or</span> <span class="keyword">replace</span> <span class="keyword">view</span> revenue_monthly_view <span class="keyword">as</span></span><br><span class="line"><span class="keyword">select</span> row_number() <span class="keyword">over</span> () <span class="keyword">as</span> <span class="keyword">id</span>,</span><br><span class="line">       vt.*</span><br><span class="line"><span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">sum</span>(<span class="string">`t1`</span>.<span class="string">`sold_price`</span> - <span class="string">`t1`</span>.<span class="string">`discount`</span>) <span class="keyword">as</span> <span class="string">`quantity`</span>,</span><br><span class="line">             <span class="keyword">date_format</span>(<span class="string">`t1`</span>.<span class="string">`settled_at`</span>, <span class="string">'%Y-%m'</span>)  <span class="keyword">as</span> <span class="string">`month`</span></span><br><span class="line">      <span class="keyword">from</span> <span class="string">`product_items`</span> <span class="string">`t1`</span></span><br><span class="line">      <span class="keyword">where</span> <span class="string">`t1`</span>.<span class="string">`status`</span> = <span class="string">'sold'</span></span><br><span class="line">      <span class="keyword">group</span> <span class="keyword">by</span> <span class="string">`month`</span></span><br><span class="line">      ) vt</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> <span class="string">`month`</span> <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure></p>
+<p>接着定义好映射到数据库视图的模型：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RevenueMonthly</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    id = models.BigAutoField(<span class="string">'ID'</span>, primary_key=<span class="keyword">True</span>, max_length=<span class="number">16</span>)</span><br><span class="line">    month = models.CharField(<span class="string">'月份'</span>, max_length=<span class="number">16</span>)</span><br><span class="line">    quantity = models.DecimalField(<span class="string">'数额'</span>, max_digits=<span class="number">16</span>, decimal_places=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        managed = <span class="keyword">False</span></span><br><span class="line">        db_table = <span class="string">'revenue_monthly_view'</span></span><br></pre></td></tr></table></figure></p>
+<p>最后，就可以跟通常QuerySet的使用一样了。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取最近12个月的收入统计</span></span><br><span class="line">last_12_month_revenue = RevenueMonthly.objects.filter(month__gt=one_year_before)</span><br></pre></td></tr></table></figure></p>
+ 
     </div>
     <!-- Table of Contents for page -->
     <!--   -->
@@ -155,7 +151,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/07/django-database-view/"
-        data-id="ckc7e8ttn0004g8j74wsxppyf"
+        data-id="ckc9qqm7u0007d3j70z51t538"
         class="article-share-link"
         >分享到</a
       >
@@ -320,7 +316,24 @@ MathJax.Hub.Queue(function() {
 
 <script src="/js/script.js"></script>
 
-</div>
+</div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 </body>
 </html>
 

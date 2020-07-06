@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta name="generator" content="Hexo 3.9.0">
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
   <title>如何使用脚本备份 MySQL 数据库？ | 江湖夜雨</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -41,14 +41,14 @@
     var s = document.getElementsByTagName("script")[0];
     s.parentNode.insertBefore(hm, s);
   })();
-</script>
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
  
     
 </head>
 </html>
 <body>
-<div id="container">
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
   <div id="wrap">
     <header id="header">
   <div id="banner"></div>
@@ -135,13 +135,9 @@
       <p>使用 <code>Shell</code> 脚本对 <code>MySQL</code> 数据库进行备份，可以满足并发量不大的小型数据库。如果是更大数据量且并发量大的生产数据库，建议采用双(多)机热备或专业备份工具，在服务可用性的前提下，更好地保证数据的完全性和安全性。</p>
 <h1 id="备份用户"><a href="#备份用户" class="headerlink" title="备份用户"></a>备份用户</h1><p>为数据库中单独创建一个备份用户，只赋予所需尽可能少的权限。与应用帐号隔离开。不要为了偷懒而直接使用 <code>root</code> 用户！</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建单独的备份用户</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">user</span> <span class="string">'backup'</span>@<span class="string">'localhost'</span> <span class="keyword">Identified</span> <span class="keyword">by</span> <span class="string">'复杂密码'</span>;</span><br><span class="line"><span class="comment">-- 仅赋予备份用户对 db1 下数据的查询、视图以及锁表权限</span></span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">select</span>,<span class="keyword">LOCK</span> <span class="keyword">TABLES</span>,<span class="keyword">SHOW</span> <span class="keyword">VIEW</span> <span class="keyword">on</span> db1.* <span class="keyword">to</span> <span class="string">'backup'</span>@<span class="string">'localhost'</span>; </span><br><span class="line"><span class="comment">-- 备份使用的 Mysqldump 还需要 reload 权限</span></span><br><span class="line"><span class="keyword">grant</span> reload <span class="keyword">on</span> *.* <span class="keyword">to</span> <span class="string">'backup'</span>@<span class="string">'localhost'</span>;</span><br><span class="line"><span class="comment">-- 更新到数据库中</span></span><br><span class="line"><span class="keyword">flush</span> <span class="keyword">privileges</span>;</span><br></pre></td></tr></table></figure>
-
-<h1 id="执行计划"><a href="#执行计划" class="headerlink" title="执行计划"></a>执行计划</h1><p>在 <code>Linux</code> 下可使用 <code>crontab</code> 设定执行计划。这可能是最简单的方式了。需要注意的是，这里是在独立的系统用户下设定的。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编辑当前用户的执行计划</span></span><br><span class="line">crontab -e</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从早上10点到晚上10点，每2小时备份一次。</span></span><br><span class="line">0 10-22/2 * * * ~/scripts/mysql_backup.sh</span><br></pre></td></tr></table></figure>
-
+<h1 id="执行计划"><a href="#执行计划" class="headerlink" title="执行计划"></a>执行计划</h1><p>在 <code>Linux</code> 下可使用 <code>crontab</code> 设定执行计划。这可能是最简单的方式了。需要注意的是，这里是在独立的系统用户下设定的。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编辑当前用户的执行计划</span></span><br><span class="line">crontab -e</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从早上10点到晚上10点，每2小时备份一次。</span></span><br><span class="line">0 10-22/2 * * * ~/scripts/mysql_backup.sh</span><br></pre></td></tr></table></figure></p>
 <h1 id="参考脚本"><a href="#参考脚本" class="headerlink" title="参考脚本"></a>参考脚本</h1><p>在当前系统用户的<code>Home</code>目录下新建<code>scripts</code>目录，创建 <code>mysql_backup.sh</code> 文件，根据自己的环境设定相应参数。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 以下配置信息请自己修改</span></span><br><span class="line">mysql_user=<span class="string">"backup"</span> <span class="comment"># MySQL备份用户</span></span><br><span class="line">mysql_password=<span class="string">"backup_user_password"</span> <span class="comment"># MySQL备份用户的密码</span></span><br><span class="line">mysql_host=<span class="string">"mysql_server_ip"</span></span><br><span class="line">mysql_port=<span class="string">"mysql_server_port"</span></span><br><span class="line">mysql_charset=<span class="string">"utf8mb4"</span> <span class="comment"># MySQL编码</span></span><br><span class="line">backup_dbs=(<span class="string">"db1"</span> <span class="string">"db2"</span>) <span class="comment"># 要备份的数据库名称，多个用空格分开隔开 如("db1" "db2" "db3")</span></span><br><span class="line">backup_location=/mnt/backup/mysql  <span class="comment"># 备份数据存放位置，末尾请不要带"/",此项可以保持默认，程序会自动创建文件夹</span></span><br><span class="line">backup_log = <span class="variable">$backup_location</span>/mysql_backup.log</span><br><span class="line">expire_backup_delete=<span class="string">"ON"</span> <span class="comment"># 是否开启过期备份删除 ON为开启 OFF为关闭</span></span><br><span class="line">expire_days=3 <span class="comment"># 过期时间天数 默认为三天，此项只有在expire_backup_delete开启时有效</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 本行开始以下不需要修改</span></span><br><span class="line">backup_time=`date +%Y%m%d%H%M`  <span class="comment"># 定义备份详细时间</span></span><br><span class="line">backup_Ymd=`date +%Y-%m-%d` <span class="comment"># 定义备份目录中的年月日时间</span></span><br><span class="line">backup_dir=<span class="variable">$backup_location</span>/<span class="variable">$backup_Ymd</span>  <span class="comment"># 备份文件夹全路径</span></span><br><span class="line">welcome_msg=<span class="string">"Welcome to use MySQL backup tools!"</span> <span class="comment"># 欢迎语</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 判断有没有定义备份的数据库，如果定义则开始备份，否则退出备份</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"<span class="variable">$backup_dbs</span>"</span> == <span class="string">""</span> ];<span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"ERROR:No database to backup! backup stop"</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line">    <span class="built_in">exit</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 判断MYSQL是否启动,mysql没有启动则备份退出</span></span><br><span class="line">mysql_ps=`ps -ef |grep mysql |wc -l`</span><br><span class="line">mysql_listen=`netstat -an |grep LISTEN |grep <span class="variable">$mysql_port</span>|wc -l`</span><br><span class="line"><span class="keyword">if</span> [ [<span class="variable">$mysql_ps</span> == 0] -o [<span class="variable">$mysql_listen</span> == 0] ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"ERROR:MySQL is not running! backup stop!"</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line">    <span class="built_in">exit</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$welcome_msg</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 逐一对设定了的数据库进行备份</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Begining backup MySQL databases, please wait......"</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line"><span class="keyword">for</span> dbname <span class="keyword">in</span> <span class="variable">$&#123;backup_dbs[@]&#125;</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"database <span class="variable">$dbname</span> backup start..."</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line">    `mkdir -p <span class="variable">$backup_dir</span>`</span><br><span class="line">    `mysqldump -h<span class="variable">$mysql_host</span> -P<span class="variable">$mysql_port</span> -u<span class="variable">$mysql_user</span> -p<span class="variable">$mysql_password</span> <span class="variable">$dbname</span> --default-character-set=<span class="variable">$mysql_charset</span> | gzip &gt; <span class="variable">$backup_dir</span>/<span class="variable">$dbname</span>-<span class="variable">$backup_time</span>.sql.gz`</span><br><span class="line">    flag=`<span class="built_in">echo</span> $?`</span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$flag</span> == <span class="string">"0"</span> ];<span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"database <span class="variable">$dbname</span> success backup to <span class="variable">$backup_dir</span>/<span class="variable">$dbname</span>-<span class="variable">$backup_time</span>.sql.gz"</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"database <span class="variable">$dbname</span> backup fail!"</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果开启了删除过期备份，则进行删除操作</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"<span class="variable">$expire_backup_delete</span>"</span> == <span class="string">"ON"</span> -a  <span class="string">"<span class="variable">$backup_location</span>"</span> != <span class="string">""</span> ];<span class="keyword">then</span></span><br><span class="line">    `find <span class="variable">$backup_location</span>/ -<span class="built_in">type</span> d -mtime +<span class="variable">$expire_days</span> | xargs rm -rf`</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Expired backup data delete complete!"</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"All database backup success! "</span> &gt;&gt; <span class="variable">$backup_log</span></span><br><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
-
  
     </div>
     <!-- Table of Contents for page -->
@@ -150,7 +146,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/06/mysql-backup-script/"
-        data-id="ckc7e8ttq0006g8j7lm6wqhv5"
+        data-id="ckc9qqm7o0004d3j7tfs2p1mn"
         class="article-share-link"
         >分享到</a
       >
@@ -324,7 +320,24 @@ MathJax.Hub.Queue(function() {
 
 <script src="/js/script.js"></script>
 
-</div>
+</div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 </body>
 </html>
 
