@@ -98,6 +98,81 @@
       <section id="main">
   
     <article
+  id="post-how-to-extend-django-user-model"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+>
+  <div class="article-meta">
+    <a href="/2020/07/how-to-extend-django-user-model/" class="article-date">
+  <time datetime="2020-07-18T03:26:07.000Z" itemprop="datePublished">2020-07-18</time>
+</a>
+
+    
+
+  </div>
+  <div class="article-inner">
+    
+ 
+    <header class="article-header">
+      
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/how-to-extend-django-user-model/">如何扩展 Django 默认用户模型</a>
+    </h1>
+  
+
+
+    </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!-- Table of Contents for post -->
+      
+        
+      <p>原生的<code>Django</code>用户模型，仅有简单的几个字段，往往难以满足实际应用的需求。比如应用中需要头像、昵称、手机号或微信UnionID等等，就需要开发者自定义扩展。</p>
+<p>但是，每个实际应用中的用户模型，又都是最核心模块之一，往往会与其他领域模型发生各种关联关系。比如登录、验证、授权等等。所以，在系统设计之初，就应该考虑清楚。特别是在<code>Django</code>项目中，扩展的原生用户模型，需要是项目的第一个应用。</p>
+<p>如何做呢？下面介绍基于<code>Django</code>用户模型中的<code>AbstractUser</code>类，自定义扩展以满足实际工程项目的需求。</p>
+<h2 id="用户模型"><a href="#用户模型" class="headerlink" title="用户模型"></a>用户模型</h2><p>在创建<code>Django</code>项目后，接着创建第一个应用<code>accounts</code>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 建项目</span></span><br><span class="line">python manage.py startproject custom_user_model</span><br><span class="line"><span class="meta">#</span><span class="bash"> 建应用</span></span><br><span class="line">python manage.py startapp accounts</span><br></pre></td></tr></table></figure>
+<p>将我们的自定义用户模型 <code>AccountModel</code> 作为 <code>AbstractUser</code> 的子类。另一个选择是扩展 <code>AbstractBaseUser</code> 类，二者差别在于所包含的字段不同，具体可阅读源码进一步了解。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># accounts/models.py</span></span><br><span class="line"><span class="keyword">from</span> django.contrib.auth.models <span class="keyword">import</span> AbstractUser</span><br><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountModel</span><span class="params">(AbstractUser)</span>:</span></span><br><span class="line">    nickname = models.CharField(<span class="string">'昵称'</span>)</span><br><span class="line">    mobile = models.CharField(<span class="string">'手机号'</span>)</span><br><span class="line">    <span class="comment"># ... 其他字段根据需要扩展</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        db_table = <span class="string">'user_accounts'</span></span><br><span class="line">        managed = <span class="keyword">True</span><span class="string">'</span></span><br></pre></td></tr></table></figure>
+<p>有了自定义的用户模型，如何关联到 <code>Django</code> 应用体系中呢？答案是 <code>AUTH_USER_MODEL</code>。我们需要在项目的 <code>settings.py</code> 文件中，将 <code>AccountModel</code> 赋给这个变量。赋值方式要求按 <code>应用名.自定义用户模型</code> 格式。类似这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># custom_user_model/settings.py</span></span><br><span class="line">AUTH_USER_MODEL = <span class="string">'accounts.AccountModel'</span></span><br></pre></td></tr></table></figure>
+<h2 id="模型管理"><a href="#模型管理" class="headerlink" title="模型管理"></a>模型管理</h2><p>自定义的用户模型中，增加了额外的字段，所以我们期望在新增/修改用户的界面中，能够展示出这些额外字段。办法是，自定义新增/修改用户的表单类，并将其关联到用户模型管理界面中。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib <span class="keyword">import</span> admin</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth.admin <span class="keyword">import</span> UserAdmin</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth.forms <span class="keyword">import</span> UserCreationForm, UserChangeForm</span><br><span class="line"><span class="keyword">from</span> accounts.models <span class="keyword">import</span> AccountModel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountCreationForm</span><span class="params">(UserCreationForm)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span><span class="params">(UserCreationForm.Meta)</span>:</span></span><br><span class="line">        model = AccountModel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountChangeForm</span><span class="params">(UserChangeForm)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span><span class="params">(UserChangeForm.Meta)</span>:</span></span><br><span class="line">        model = AccountModel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountAdmin</span><span class="params">(UserAdmin)</span>:</span></span><br><span class="line">    form = AccountChangeForm</span><br><span class="line">    add_form = AccountCreationForm</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">admin.site.register(AccountModel, AccountAdmin)</span><br></pre></td></tr></table></figure>
+<p>通过以上的简单扩展，我们就可以新建/编辑用户信息时，对新增字段进行操作了。</p>
+<h2 id="测试运行"><a href="#测试运行" class="headerlink" title="测试运行"></a>测试运行</h2><p>将我们扩展用户模型添加到应用列表中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># custom_user_model/settings.py</span></span><br><span class="line"></span><br><span class="line">INSTALLED_APPS = [</span><br><span class="line">    <span class="comment"># ...</span></span><br><span class="line">    <span class="string">'accounts.apps.AccountsConfig'</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>执行数据库升级，创建超级用户，最后启动开发服务器：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python manage.py makemigrations</span><br><span class="line">python manage.py migrate</span><br><span class="line">python manage.py createsuperuser</span><br><span class="line">python manage.py runserver</span><br></pre></td></tr></table></figure></p>
+<h2 id="模型关联"><a href="#模型关联" class="headerlink" title="模型关联"></a>模型关联</h2><p>因为自定义扩展了 <code>Django</code> 的用户模型，所以我们领域模型中的<code>用户</code>，需要以另外的方式进行关联。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> custom_user_model <span class="keyword">import</span> settings</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AccountCharge</span><span class="params">(models.Model)</span>:</span></span><br><span class="line">    account = models.ForeignKey(</span><br><span class="line">        settings.AUTH_USER_MODEL,  <span class="comment"># 这是新的外键关联方式！</span></span><br><span class="line">        on_delete=models.CASCADE)</span><br></pre></td></tr></table></figure>
+<p>通过以上几个步骤，我们就创建好了一个基于 <code>Django</code> 框架、适用于真实项目的基本骨架。</p>
+ 
+    </div>
+    <!-- Table of Contents for page -->
+    <!--   -->
+    <footer class="article-footer">
+      
+      <a
+        data-url="https://www.chenyy.me/2020/07/how-to-extend-django-user-model/"
+        data-id="ckcr613sl000q6gj7pj3gker9"
+        class="article-share-link"
+        >分享到</a
+      >
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Architect/">Architect</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Django/">Django</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article
   id="post-django-database-view"
   class="article article-type-post"
   itemscope
@@ -149,7 +224,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/07/django-database-view/"
-        data-id="ckc9qujey0005i9j77boamerk"
+        data-id="ckcr613sn000s6gj72fkzw5ub"
         class="article-share-link"
         >分享到</a
       >
@@ -212,7 +287,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/06/mysql-backup-script/"
-        data-id="ckc9qujf10007i9j7fmju4e07"
+        data-id="ckcr613sk000p6gj7lpjmtvez"
         class="article-share-link"
         >分享到</a
       >
@@ -273,7 +348,7 @@
       
       <a
         data-url="https://www.chenyy.me/2020/06/export-wechat-members/"
-        data-id="ckc9qujew0004i9j7djz5cam2"
+        data-id="ckcr613se000b6gj7ah1vooy7"
         class="article-share-link"
         >分享到</a
       >
@@ -303,7 +378,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Airtest/" style="font-size: 10px;">Airtest</a> <a href="/tags/Appium/" style="font-size: 10px;">Appium</a> <a href="/tags/Bash/" style="font-size: 10px;">Bash</a> <a href="/tags/Django/" style="font-size: 10px;">Django</a> <a href="/tags/MySQL/" style="font-size: 20px;">MySQL</a> <a href="/tags/OCR/" style="font-size: 10px;">OCR</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/Selenium/" style="font-size: 10px;">Selenium</a> <a href="/tags/Shell/" style="font-size: 10px;">Shell</a> <a href="/tags/Tesseract/" style="font-size: 10px;">Tesseract</a> <a href="/tags/备份/" style="font-size: 10px;">备份</a> <a href="/tags/微信/" style="font-size: 10px;">微信</a> <a href="/tags/数据库视图/" style="font-size: 10px;">数据库视图</a> <a href="/tags/数据报表/" style="font-size: 10px;">数据报表</a>
+      <a href="/tags/Airtest/" style="font-size: 10px;">Airtest</a> <a href="/tags/Appium/" style="font-size: 10px;">Appium</a> <a href="/tags/Architect/" style="font-size: 10px;">Architect</a> <a href="/tags/Bash/" style="font-size: 10px;">Bash</a> <a href="/tags/Django/" style="font-size: 20px;">Django</a> <a href="/tags/MySQL/" style="font-size: 20px;">MySQL</a> <a href="/tags/OCR/" style="font-size: 10px;">OCR</a> <a href="/tags/Python/" style="font-size: 20px;">Python</a> <a href="/tags/Selenium/" style="font-size: 10px;">Selenium</a> <a href="/tags/Shell/" style="font-size: 10px;">Shell</a> <a href="/tags/Tesseract/" style="font-size: 10px;">Tesseract</a> <a href="/tags/备份/" style="font-size: 10px;">备份</a> <a href="/tags/微信/" style="font-size: 10px;">微信</a> <a href="/tags/数据库视图/" style="font-size: 10px;">数据库视图</a> <a href="/tags/数据报表/" style="font-size: 10px;">数据报表</a>
     </div>
   </div>
 
@@ -313,7 +388,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -324,6 +399,10 @@
     <h3 class="widget-title">近期文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/07/how-to-extend-django-user-model/">如何扩展 Django 默认用户模型</a>
+          </li>
         
           <li>
             <a href="/2020/07/django-database-view/">Django读取MySQL视图数据</a>

@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.chenyy.me/"/>
-  <updated>2020-07-04T08:36:31.749Z</updated>
+  <updated>2020-07-18T04:42:09.332Z</updated>
   <id>https://www.chenyy.me/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何扩展 Django 默认用户模型</title>
+    <link href="https://www.chenyy.me/2020/07/how-to-extend-django-user-model/"/>
+    <id>https://www.chenyy.me/2020/07/how-to-extend-django-user-model/</id>
+    <published>2020-07-18T03:26:07.000Z</published>
+    <updated>2020-07-18T04:42:09.332Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;原生的&lt;code&gt;Django&lt;/code&gt;用户模型，仅有简单的几个字段，往往难以满足实际应用的需求。比如应用中需要头像、昵称、手机号或微信UnionID等等，就需要开发者自定义扩展。&lt;/p&gt;
+&lt;p&gt;但是，每个实际应用中的用户模型，又都是最核心模块之一，往往会与其他领域模型
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Python" scheme="https://www.chenyy.me/tags/Python/"/>
+    
+      <category term="Django" scheme="https://www.chenyy.me/tags/Django/"/>
+    
+      <category term="Architect" scheme="https://www.chenyy.me/tags/Architect/"/>
+    
+  </entry>
   
   <entry>
     <title>Django读取MySQL视图数据</title>
@@ -36,9 +65,9 @@
     </summary>
     
     
-      <category term="Django" scheme="https://www.chenyy.me/tags/Django/"/>
-    
       <category term="MySQL" scheme="https://www.chenyy.me/tags/MySQL/"/>
+    
+      <category term="Django" scheme="https://www.chenyy.me/tags/Django/"/>
     
       <category term="数据库视图" scheme="https://www.chenyy.me/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%86%E5%9B%BE/"/>
     
